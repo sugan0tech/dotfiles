@@ -1,0 +1,1 @@
+[alias] graph = log --all --decorate --oneline --graph
