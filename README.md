@@ -6,4 +6,4 @@ All of these files are managed by GNU Stow
 
 `stow -t ~/ dotfiles`
 
-## Developed by and for [sugan0tech](github.com/sugan0tech)
+## Developed by and for [sugan0tech](https://github.com/sugan0tech)
