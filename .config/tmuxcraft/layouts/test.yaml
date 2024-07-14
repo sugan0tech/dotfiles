@@ -1,0 +1,16 @@
+session_name: test
+path: ~/Documents/GitHub/tmuxcraft
+windows:
+  - name: nvim
+    root: ~/Documents/GitHub/tmuxcraft/
+    panes:
+      - command: nvim
+        split_v: 20
+      - command: bash
+        split_h: 50
+      - select: 0
+  - name: resource
+    panes:
+      - command: htop
+        percentage: 100
+  - name: test
