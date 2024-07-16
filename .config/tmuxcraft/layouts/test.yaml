@@ -2,15 +2,17 @@ session_name: test
 path: ~/Documents/GitHub/tmuxcraft
 windows:
   - name: nvim
-    root: ~/Documents/GitHub/tmuxcraft/
+    path: ~/Documents
+    command: nvim
     panes:
-      - command: nvim
-        split_v: 20
+      - command: tty-clock -t
+        split: h
+        size: 20
       - command: bash
-        split_h: 50
-      - select: 0
+        size: 50
+        split: v
   - name: resource
-    panes:
-      - command: htop
-        percentage: 100
+    command: htop
+    panes: []
   - name: test
+    panes: []
