@@ -5,11 +5,11 @@ windows:
     path: ~/Documents
     command: nvim
     panes:
-      - command: tty-clock -t
+      - command: "tty-clock -t"
         split: h
-        size: 20
+        size: 40
       - command: bash
-        size: 50
+        size: 20
         split: v
   - name: resource
     command: htop
