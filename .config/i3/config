@@ -1,23 +1,43 @@
 set $mod Mod4
 
-bindsym $mod+Shift+s exec --no-startup-id spectacle -r -b -c
 
 exec_always --no-startup-id xrandr --output HDMI-0 --auto --left-of DP-2
 exec_always --no-startup-id greenclip daemon
 #dunst
 exec_always --no-startup-id dunst --config '~/.config/dunst/dunstrc'
 #wallpaper
-exec_always --no-startup-id feh --no-fehbg --bg-fill ~/.config/i3/red.jpeg
+# exec_always --no-startup-id feh --no-fehbg --bg-fill ~/.config/i3/red.jpeg
+exec --no-startup-id sleep 1 && feh --bg-fill /home/sugan/Pictures/Wallapaer/endeavouros-wallpaper.png
+
+# keyring
+exec --no-startup-id /usr/bin/kwalletd6
+
+# set powersavings for display:
+exec --no-startup-id xset s 480 dpms 600 600 600
 
 # floating window
 # floating pop up automatically
 for_window [window_role="pop-up"] floating enable
 for_window [window_role="task_dialog"] floating enable
 
+# set floating (nontiling) for apps needing it
+for_window [class="Yad" instance="yad"] floating enable
+for_window [class="Galculator" instance="galculator"] floating enable
+for_window [class="Blueberry.py" instance="blueberry.py"] floating enable
+
+# set floating (nontiling) for special apps
+for_window [class="Xsane" instance="xsane"] floating enable
+for_window [class="Pavucontrol" instance="pavucontrol"] floating enable
+for_window [class="qt5ct" instance="qt5ct"] floating enable
+for_window [class="Blueberry.py" instance="blueberry.py"] floating enable
+for_window [class="Bluetooth-sendto" instance="bluetooth-sendto"] floating enable
+for_window [class="Pamac-manager"] floating enable
+for_window [window_role="About"] floating enable
+ 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
 # for line border alone 
-font pango:Noto Sans 0 
+font pango:Noto Sans 0
 
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
@@ -29,9 +49,21 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 # norlal lock screen
 bindsym $mod+Ctrl+Shift+l exec --no-startup-id i3lock -i ~/.config/i3/green.png
 
+
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 exec --no-startup-id nm-applet
+
+## Key Bindings
+
+# Screen shot capture
+bindsym $mod+Shift+s exec --no-startup-id spectacle -r -b -c
+bindsym Print exec --no-startup-id scrot ~/Pictures/%Y-%m-%d-%T-screenshot.png && notify-send "Screenshot saved to ~/$(date +"%Y-%m-%d-%T")-screenshot.png"
+
+
+# switch/iterate between workspaces
+bindsym $mod+Tab workspace next
+bindsym $mod+Shift+Tab workspace prev
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
@@ -40,6 +72,14 @@ bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
+# audio control
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+# Above line will also work for pausing
+bindsym XF86AudioNext exec --no-startup-id playerctl next
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+
+# Redirect sound to headphones
+bindsym $mod+p exec --no-startup-id /usr/local/bin/switch-audio-port
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -52,13 +92,17 @@ bindsym $mod+Shift+q kill
 
 #clipboard
 bindsym $mod+Shift+v exec "rofi -modi 'clipboard:greenclip print' -show clipboard -run-command '{cmd}'"
-# start rofi (a program launcher)
-# old
-# bindsym $mod+d exec "rofi -modi window,drun,run -show drun -sidebar-mode -terminal termite -color-window '#000000, #000000, #000000' -color-normal '#000000, #b3e774, #000000, #b3e774, #000000' -color-active '#000000, #b3e774, #000000, #b3e774, #000000' -color-urgent '#000000, #b3e774, #000000, #b3e774, #000000'"
-# new
-bindsym $mod+d exec --no-startup-id ~/.config/rofi/launchers/type-6/launcher.sh
-# powermenu #todo facing bugs in nu config
-# bindsym $mod+p exec --no-startup-id powermenu_t2
+
+# start drun applications
+bindsym $mod+d exec --no-startup-id rofi -modi drun -show drun \
+                -config ~/.config/rofi/rofidmenu.rasi
+
+# start rofi for window
+bindsym $mod+t exec --no-startup-id rofi -show window \
+                -config ~/.config/rofi/rofidmenu.rasi
+
+# start file manager
+bindsym $mod+n exec --no-startup-id /usr/bin/thunar
 
 # Partial vim bindings for navigations
 # change focus
@@ -108,8 +152,14 @@ bindsym $mod+space focus mode_toggle
 # focus the parent container
 bindsym $mod+a focus parent
 
-# focus the child container
-#bindsym $mod+d focus child
+# reload the configuration file
+bindsym $mod+shift+c reload
+
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+shift+r restart
+
+# exit i3 (logs you out of your x session)
+bindsym $mod+shift+e exec "i3-nagbar -t warning -m 'you pressed the exit shortcut. do you really want to exit i3? this will end your x session.' -b 'yes, exit i3' 'i3-msg exit'"
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
@@ -137,6 +187,30 @@ bindsym $mod+8 workspace number $ws8
 bindsym $mod+9 workspace number $ws9
 bindsym $mod+0 workspace number $ws10
 
+# switch to workspace with numpad keys
+bindcode $mod+87 workspace $ws1
+bindcode $mod+88 workspace $ws2
+bindcode $mod+89 workspace $ws3
+bindcode $mod+83 workspace $ws4
+bindcode $mod+84 workspace $ws5
+bindcode $mod+85 workspace $ws6
+bindcode $mod+79 workspace $ws7
+bindcode $mod+80 workspace $ws8
+bindcode $mod+81 workspace $ws9
+bindcode $mod+90 workspace $ws10
+
+# switch to workspace with numlock numpad keys
+bindcode $mod+Mod2+87 workspace $ws1
+bindcode $mod+Mod2+88 workspace $ws2
+bindcode $mod+Mod2+89 workspace $ws3
+bindcode $mod+Mod2+83 workspace $ws4
+bindcode $mod+Mod2+84 workspace $ws5
+bindcode $mod+Mod2+85 workspace $ws6
+bindcode $mod+Mod2+79 workspace $ws7
+bindcode $mod+Mod2+80 workspace $ws8
+bindcode $mod+Mod2+81 workspace $ws9
+bindcode $mod+Mod2+90 workspace $ws10
+
 # move focused container to workspace
 bindsym $mod+shift+1 move container to workspace number $ws1
 bindsym $mod+shift+2 move container to workspace number $ws2
@@ -149,12 +223,6 @@ bindsym $mod+shift+8 move container to workspace number $ws8
 bindsym $mod+shift+9 move container to workspace number $ws9
 bindsym $mod+shift+0 move container to workspace number $ws10
 
-# reload the configuration file
-bindsym $mod+shift+c reload
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+shift+r restart
-# exit i3 (logs you out of your x session)
-bindsym $mod+shift+e exec "i3-nagbar -t warning -m 'you pressed the exit shortcut. do you really want to exit i3? this will end your x session.' -b 'yes, exit i3' 'i3-msg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -183,6 +251,7 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 hide_edge_borders smart
+
 # start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 # bar {
@@ -205,22 +274,37 @@ mode "resize" {
 }
 bindsym $super+r mode "resize"
 
+set $darkbluetrans      #08052be6
+set $darkblue           #08052b
+set $lightblue          #5294e2
+set $urgentred          #e53935
+set $white              #ffffff
+set $black              #000000
+set $purple             #e345ff
+set $darkgrey           #383c4a
+set $grey               #b0b5bd
+set $mediumgrey         #8b8b8b
+set $yellowbrown        #e1b700
+
+
 bar {
-#        colors {
-#        background #2f343f
-#        statusline #2f343f
-#        separator #4b5262
-#
-#        # colour of border, background, and text
-#        focused_workspace       #2f343f #bf616a #d8dee8
-#        active_workspace        #2f343f #2f343f #d8dee8
-#        inactive_workspace      #2f343f #2f343f #d8dee8
-#        urgent_workspacei       #2f343f #ebcb8b #2f343f
-#    }
+
+	    colors {
+	    separator          $purple
+	    background         $darkgrey
+	    statusline         $white
+#                                       border                  bg              txt             indicator
+	focused_workspace       $mediumgrey             $grey           $darkgrey       $purple
+	active_workspace        $lightblue              $mediumgrey     $darkgrey       $purple
+	inactive_workspace      $darkgrey               $darkgrey       $grey           $purple
+	urgent_workspace        $urgentred              $urgentred      $white          $purple
+        }
 
 
     font pango:Noto Sans 8
-    status_command i3status --config "~/.config/i3/i3status.config"
+#     status_command i3status --config "~/.config/i3/i3status.config"
+                    status_command i3blocks -c ~/.config/i3/i3blocks.conf
+
 
 }
 
@@ -228,6 +312,17 @@ bar {
     mode hide
     font pango:Noto Sans 8
     status_command echo '{"version":1}[[],'; xtitle -s -f '[{"full_text": "%s"}],'
+
+	    colors {
+	    separator          $purple
+	    background         $darkgrey
+	    statusline         $white
+#                                       border                  bg              txt             indicator
+	focused_workspace       $mediumgrey             $grey           $darkgrey       $purple
+	active_workspace        $lightblue              $mediumgrey     $darkgrey       $purple
+	inactive_workspace      $darkgrey               $darkgrey       $grey           $purple
+	urgent_workspace        $urgentred              $urgentred      $white          $purple
+        }
   }
 
 # window rules, you can find the window class using xprop
@@ -243,12 +338,18 @@ for_window [class=urxvt|firefox|geany|evince|soffice|libreoffice*|mpv|ghb|xfburn
 for_window [class=xfburn|gparted|system-config-printer.py|lxtask|pavucontrol|exo-helper*|lxrandr|arandr] focus
 
 # client.focused              #1e88e5 #1f1f1f #ffffff #1e88e5 #1e88e5
-client.focused              #1e88e5 #1e88e5 #ffffff #1e88e5 #1e88e5
-client.focused_inactive     #1f1f1f #1f1f1f #ffffff #f1f1f1 #1f1f1f
-client.unfocused            #1f1f1f #1f1f1f #ffffff #1f1f1f #1f1f1f
-client.urgent               #2f343f #2f343f #d8dee8 #2f343f #2f343f
-client.placeholder          #2f343f #2f343f #d8dee8 #2f343f #2f343f
-client.background           #2f343f
-#2f343f -> default new #f1f1f1
-#d8dee8 --> defalu focused border new #ffb300
-# #1e88e5
+# client.focused              #1e88e5 #1e88e5 #ffffff #1e88e5 #1e88e5
+# client.focused_inactive     #1f1f1f #1f1f1f #ffffff #f1f1f1 #1f1f1f
+# client.unfocused            #1f1f1f #1f1f1f #ffffff #1f1f1f #1f1f1f
+# client.urgent               #2f343f #2f343f #d8dee8 #2f343f #2f343f
+# client.placeholder          #2f343f #2f343f #d8dee8 #2f343f #2f343f
+# client.background           #2f343f
+
+# define colors for windows:
+#class                          border          bground         text            indicator       child_border
+client.focused                  $lightblue      $darkblue       $white          $mediumgrey     $mediumgrey
+client.unfocused                $darkblue       $darkblue       $grey           $darkgrey       $darkgrey
+client.focused_inactive         $darkblue       $darkblue       $grey           $black          $black
+client.urgent                   $urgentred      $urgentred      $white          $yellowbrown    $yellowbrown
+client.placeholder              $urgentred      $urgentred      $white          $yellowbrown    $yellowbrown
+client.background		$urgentred
