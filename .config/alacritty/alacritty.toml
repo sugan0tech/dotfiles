@@ -8,9 +8,11 @@ TERM = "alacritty"
 [scrolling]
 history = 10000
 
-[shell]
+[terminal.shell]
 program = "/bin/nu"
 
 [window.padding]
 x = 0
 y = 0
+
+[terminal]
