@@ -146,3 +146,4 @@ export EDITOR=nvim
 
 export PATH="$PATH:/home/sugan/.dotnet/tools"
 
+export PATH=$PATH:/bin:/usr/bin
