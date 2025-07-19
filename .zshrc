@@ -1,44 +1,56 @@
-# Enable Powerlevel10k instant prompt
+# Powerlevel10k Instant Prompt — keep this at the top
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Zsh Framework (Oh My Zsh)
 export ZSH="$HOME/.oh-my-zsh"
-
 ZSH_THEME="powerlevel10k/powerlevel10k"
-plugins=(git fzf zsh-autosuggestions zsh-syntax-highlighting history-substring-search)
 
 source $ZSH/oh-my-zsh.sh
-source ~/powerlevel10k/powerlevel10k.zsh-theme
 
-# Load Powerlevel10k Config
+# Remove this line — it causes your theme error
+# source ~/powerlevel10k/powerlevel10k.zsh-theme
+
+# Powerlevel10k config
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Environment Variables
-[ -f "/Users/sugavanesh/.ghcup/env" ] && . "/Users/sugavanesh/.ghcup/env"
-export PATH="$PATH:/Users/sugavanesh/.dotnet/tools"
+# Optional: Suppress Powerlevel10k instant prompt warning
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
-# Terraform Autocompletion
+# Autosuggestions & Syntax Highlighting (Use Arch Linux paths)
+# If installed via pacman:
+if [[ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
+  source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
+if [[ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
+  source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
+
+# Haskell setup (optional)
+[ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env"
+
+# Path fixes
+export PATH="$PATH:$HOME/.dotnet/tools"
+
+# Terraform autocomplete
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /opt/homebrew/bin/terraform terraform
+complete -o nospace -C /usr/bin/terraform terraform
 
-## Vim Mode & Navigation
-
-# Enable Vim mode
+# Vim Mode & Keybindings
 bindkey -v
-
-# Change cursor shape (block for Normal, line for Insert)
 export KEYTIMEOUT=1
 function zle-keymap-select {
-    if [[ $KEYMAP == vicmd ]]; then
-        echo -ne "\e[1 q"
-    else
-        echo -ne "\e[5 q"
-    fi
+  if [[ $KEYMAP == vicmd ]]; then
+    echo -ne "\e[1 q"
+  else
+    echo -ne "\e[5 q"
+  fi
 }
 zle -N zle-keymap-select
 
-# Vim-style keybindings
+# Vi-mode navigation
 bindkey -M vicmd 'h' backward-char
 bindkey -M vicmd 'l' forward-char
 bindkey -M vicmd 'w' forward-word
@@ -53,33 +65,32 @@ bindkey -M vicmd 'p' insert-last-word
 bindkey -M vicmd 'u' undo
 bindkey -M vicmd 'k' up-line-or-history
 bindkey -M vicmd 'j' down-line-or-history
-
-# Open command in Vim
 autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd '^e' edit-command-line
 
-## Fuzzy Finder (Ctrl+R)
-
+# Fuzzy Finder
 export FZF_DEFAULT_OPTS="--height=40% --border --reverse --inline-info"
 export FZF_CTRL_R_OPTS="--preview='echo {}' --preview-window=up:5:wrap"
 
-# Bind fuzzy history search
+# If running on Arch Linux, load fzf bindings
+if command -v pacman &>/dev/null && grep -qi 'arch' /etc/os-release; then
+  [ -f /usr/share/fzf/key-bindings.zsh ] && source /usr/share/fzf/key-bindings.zsh
+  [ -f /usr/share/fzf/completion.zsh ] && source /usr/share/fzf/completion.zsh
+  bindkey '^r' fzf-history-widget
+fi
+
 bindkey '^r' fzf-history-widget
 
-## Syntax Highlighting & Autosuggestions
-
-# Enable syntax highlighting & autosuggestions
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-## Improved 'cd' with Zoxide
-
+# Zoxide for better `cd`
 eval "$(zoxide init zsh)"
 alias cd='z'
 
-## Better ls using eza
-
+# Better ls with eza
 alias ls='eza --icons --color=auto'
 alias ll='eza -lh --icons'
 alias la='eza -lha --icons'
+
+# Autosuggestions and Syntax Highlighting (Arch Linux system path)
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
