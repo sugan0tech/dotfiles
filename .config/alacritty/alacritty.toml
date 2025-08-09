@@ -12,9 +12,11 @@ TERM = "alacritty"
 [scrolling]
 history = 10000
 
-# [shell]
-# program = "/opt/homebrew/bin/nu"
+[terminal.shell]
+program = "/bin/nu"
 
 [window.padding]
 x = 0
 y = 0
+
+[terminal]
