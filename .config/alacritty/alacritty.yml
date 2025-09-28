@@ -1,19 +1,48 @@
-env:
-  TERM: alacritty
+# Import your theme file
+import:
+  - ~/.config/omarchy/current/theme/alacritty.toml
 
+# Environment variables
+env:
+  TERM: "xterm-256color"
+
+# Font configuration
+font:
+  normal:
+    family: "CaskaydiaMono Nerd Font"
+    style: "Regular"
+  bold:
+    family: "CaskaydiaMono Nerd Font"
+    style: "Bold"
+  italic:
+    family: "CaskaydiaMono Nerd Font"
+    style: "Italic"
+  size: 9
+
+# Window settings
 window:
   padding:
-    x: 0
-    y: 0
+    x: 14
+    y: 14
+  decorations: "None"
 
+# Keyboard bindings
+keyboard:
+  bindings:
+    - { key: F11, action: "ToggleFullscreen" }
 
+# Shell configuration to use Zsh
+shell:
+  program: "/usr/bin/zsh"
+  args:
+    - --login
+
+# Scrolling configuration from your previous file
 scrolling:
   history: 10000
 
+# Color scheme from your previous file
 colors:
   primary:
     background: '#000000'
     foreground: '#c5c8c6'
-
-shell:
-   program: /bin/nu

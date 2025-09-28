@@ -141,8 +141,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 export PATH="$HOME/.tmuxifier/bin:$PATH"
-export EDITOR=nvim
-. "$HOME/.cargo/env"
 
 export PATH="$PATH:/home/sugan/.dotnet/tools"
 
